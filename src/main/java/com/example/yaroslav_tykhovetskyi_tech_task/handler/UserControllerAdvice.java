@@ -1,6 +1,7 @@
 package com.example.yaroslav_tykhovetskyi_tech_task.handler;
 
 import com.example.yaroslav_tykhovetskyi_tech_task.dto.ErrorResponse;
+import com.example.yaroslav_tykhovetskyi_tech_task.exception.InvalidRequestException;
 import com.example.yaroslav_tykhovetskyi_tech_task.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,12 @@ public class UserControllerAdvice {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<?> handleUserNotFound(UserNotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<?> handleInvalidRequest(InvalidRequestException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));
     }
 }

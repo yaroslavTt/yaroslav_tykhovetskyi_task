@@ -1,6 +1,7 @@
 package com.example.yaroslav_tykhovetskyi_tech_task.service.implementation;
 
 import com.example.yaroslav_tykhovetskyi_tech_task.dto.UserResponse;
+import com.example.yaroslav_tykhovetskyi_tech_task.exception.InvalidRequestException;
 import com.example.yaroslav_tykhovetskyi_tech_task.exception.UserNotFoundException;
 import com.example.yaroslav_tykhovetskyi_tech_task.model.User;
 import com.example.yaroslav_tykhovetskyi_tech_task.repository.UserRepository;
@@ -20,6 +21,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse saveUser(User user) {
+        if (Objects.isNull(user.getFirstName()) || Objects.isNull(user.getLastName()) || Objects.isNull(user.getDateOfBirth())){
+            throw new InvalidRequestException("Can't save User from provided data");
+        }
         return mapUserToDto(userRepository.save(user));
     }
 
@@ -37,12 +41,12 @@ public class UserServiceImpl implements UserService {
         return UserResponse.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .age(calculateAge(user))
+                .age(calculateAge(user.getDateOfBirth()))
                 .build();
     }
 
-    private static int calculateAge(User user) {
-        return (int)(LocalDate.now().toEpochDay() - user.getDateOfBirth().toEpochDay()) / 365;
+    private static int calculateAge(LocalDate dateOfBirth) {
+        return (int)(LocalDate.now().toEpochDay() - dateOfBirth.toEpochDay()) / 365;
     }
 
     private User getUserById(Long id){
